@@ -1,0 +1,11 @@
+{
+  "development": {
+    "username": "ishanliv99",
+    "password": "pass123",
+    "database": "twittest",
+    "host": "localhost",
+    "port": 5433,
+    "dialect": "postgres",
+    "operatorsAliases": "false"
+  }
+}
