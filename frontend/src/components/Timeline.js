@@ -78,7 +78,7 @@ class Timeline extends Component {
     };
   }
 
-  componentDidUpdate(props) {
+  componentDidMount() {
     axios
       .get('127.0.0.1:8000/api/tweets')
       .then(res => {
