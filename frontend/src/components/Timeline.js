@@ -252,7 +252,7 @@ class Timeline extends Component {
                               onClick={() => onEditClick(post.tweet, post.id)}
                             >
                               <EditIcon />
-                            </IconButton> 
+                            </IconButton>
                             <IconButton
                               disabled
                               color="secondary"
