@@ -1,19 +1,19 @@
-import React, { Component } from 'react';
-import { Redirect } from 'react-router';
-import axios from 'axios';
+import React from 'react';
+import { Redirect } from 'react-router-dom';
+
+import Fade from '@material-ui/core/Fade';
+import Paper from '@material-ui/core/Paper';
+import Input from '@material-ui/core/Input';
+import Popper from '@material-ui/core/Popper';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
+import Divider from '@material-ui/core/Divider';
+import InputLabel from '@material-ui/core/InputLabel';
+import Typography from '@material-ui/core/Typography';
+import LockIcon from '@material-ui/icons/LockOutlined';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import FormControl from '@material-ui/core/FormControl';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
-import LockIcon from '@material-ui/icons/LockOutlined';
-import Paper from '@material-ui/core/Paper';
-import Divider from '@material-ui/core/Divider';
-import Typography from '@material-ui/core/Typography';
 import withStyles from '@material-ui/core/styles/withStyles';
-import Popper from '@material-ui/core/Popper';
-import Fade from '@material-ui/core/Fade';
 
 const styles = theme => ({
   layout: {
@@ -48,174 +48,109 @@ const styles = theme => ({
   },
   button: {
     margin: theme.spacing.unit
-  },
-  input: {
-    display: 'none'
-  },
-  typography: {
-    padding: theme.spacing.unit * 2
-  },
-  popper: {
-    marginTop: theme.spacing.unit
   }
 });
 
-class SignIn extends Component {
-  constructor() {
-    super();
+const SignIn = props => {
+  const {
+    open,
+    classes,
+    anchorEl,
+    setAnchor,
+    openSignUp,
+    goToSignUp,
+    handleChange,
+    handleSignIn,
+    authenticated
+  } = props;
 
-    this.state = {
-      username: '',
-      password: '',
-      openSignUp: false,
-      authenticated: false,
-      open: false
-    };
-
-    this.goToSignUp = this.goToSignUp.bind(this);
-    this.goToTimeline = this.goToTimeline.bind(this);
-    this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.handlePopper = this.handlePopper.bind(this);
+  if (openSignUp) {
+    return <Redirect push to="/signup" />;
   }
 
-  goToSignUp() {
-    this.setState({ openSignUp: true });
+  if (authenticated) {
+    return <Redirect push to="/timeline" />;
   }
 
-  goToTimeline() {
-    this.setState({ authenticated: true });
-  }
-
-  handleChange(e) {
-    const { name, value } = e.target;
-    this.setState({ [name]: value });
-  }
-
-  handleSubmit(e) {
-    axios
-      .post('http://127.0.0.1:8000/api/auth/signin', {
-        username: this.state.username,
-        password: this.state.password
-      })
-      .then(() => {
-        this.goToTimeline();
-
-        this.setState({
-          username: '',
-          password: ''
-        });
-      })
-      .catch(() => {
-        this.handlePopper();
-        setTimeout(() => {
-          this.handlePopper();
-        }, 2000);
-      });
-    e.preventDefault();
-  }
-
-  handlePopper() {
-    this.setState(state => ({
-      open: !state.open
-    }));
-  }
-
-  render() {
-    const { classes } = this.props;
-    const { open } = this.state;
-
-    if (this.state.openSignUp) {
-      return <Redirect push to="/signup" />;
-    }
-
-    if (this.state.authenticated) {
-      return <Redirect push to="/timeline" />;
-    }
-
-    return (
-      <React.Fragment>
-        <CssBaseline />
-        <main className={classes.layout}>
-          <Popper
-            id="popper"
-            open={open}
-            anchorEl={this.anchorEl}
-            placement="top"
-            classname={classes.popper}
-            transition
-          >
-            {({ TransitionProps }) => (
-              <Fade {...TransitionProps} timeout={350}>
-                <Paper>
-                  <Typography className={classes.typography}>
-                    The username and password you entered did not match our
-                    records. Please double-check and try again.
-                  </Typography>
-                </Paper>
-              </Fade>
-            )}
-          </Popper>
-          <Paper className={classes.paper}>
-            <Avatar className={classes.avatar}>
-              <LockIcon />
-            </Avatar>
-            <Typography component="h1" variant="h5">
+  return (
+    <React.Fragment>
+      <CssBaseline />
+      <main className={classes.layout}>
+        <Popper
+          transition
+          id="popper"
+          open={open}
+          placement="top"
+          anchorEl={anchorEl}
+        >
+          {({ TransitionProps }) => (
+            <Fade {...TransitionProps} timeout={350}>
+              <Paper>
+                <Typography className={classes.typography}>
+                  The username and password you entered did not match our
+                  records. Please double-check and try again.
+                </Typography>
+              </Paper>
+            </Fade>
+          )}
+        </Popper>
+        <Paper className={classes.paper}>
+          <Avatar className={classes.avatar}>
+            <LockIcon />
+          </Avatar>
+          <Typography component="h1" variant="h5">
+            Sign in
+          </Typography>
+          <form className={classes.form}>
+            <FormControl margin="normal" required fullWidth>
+              <InputLabel htmlFor="username">Username</InputLabel>
+              <Input
+                required
+                autoFocus
+                id="username"
+                name="username"
+                autoComplete="username"
+                onChange={handleChange}
+              />
+            </FormControl>
+            <FormControl margin="normal" required fullWidth>
+              <InputLabel htmlFor="password">Password</InputLabel>
+              <Input
+                required
+                id="password"
+                name="password"
+                type="password"
+                onChange={handleChange}
+                autoComplete="current-password"
+              />
+            </FormControl>
+            <Button
+              type="submit"
+              fullWidth
+              color="primary"
+              variant="contained"
+              buttonRef={setAnchor}
+              onClick={handleSignIn}
+              className={classes.submit}
+            >
               Sign in
-            </Typography>
-            <form className={classes.form}>
-              <FormControl margin="normal" required fullWidth>
-                <InputLabel htmlFor="username">Username</InputLabel>
-                <Input
-                  id="username"
-                  name="username"
-                  autoComplete="username"
-                  required
-                  onChange={this.handleChange}
-                  autoFocus
-                />
-              </FormControl>
-              <FormControl margin="normal" required fullWidth>
-                <InputLabel htmlFor="password">Password</InputLabel>
-                <Input
-                  name="password"
-                  type="password"
-                  id="password"
-                  required
-                  onChange={this.handleChange}
-                  autoComplete="current-password"
-                />
-              </FormControl>
+            </Button>
+            <Divider />
+            <Typography component="caption" variant="button">
+              Don't have an account?
               <Button
-                type="submit"
-                fullWidth
-                variant="contained"
                 color="primary"
-                className={classes.submit}
-                buttonRef={node => {
-                  this.anchorEl = node;
-                }}
-                onClick={this.handleSubmit}
+                onClick={goToSignUp}
+                className={classes.button}
               >
-                Sign in
+                Sign Up
               </Button>
-              <Divider />
-              <Typography component="caption" variant="button">
-                Don't have an account?
-                <Button
-                  color="primary"
-                  className={classes.button}
-                  onClick={this.goToSignUp}
-                >
-                  Sign Up
-                </Button>
-              </Typography>
-            </form>
-          </Paper>
-        </main>
-      </React.Fragment>
-    );
-  }
-}
+            </Typography>
+          </form>
+        </Paper>
+      </main>
+    </React.Fragment>
+  );
+};
 
 export default withStyles(styles)(SignIn);

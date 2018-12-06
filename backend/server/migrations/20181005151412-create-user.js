@@ -4,11 +4,11 @@ module.exports = {
       id: {
         allowNull: false,
         autoIncrement: true,
-        primaryKey: true,
         type: Sequelize.INTEGER
       },
       username: {
         allowNull: false,
+        primaryKey: true,
         type: Sequelize.STRING
       },
       email: {

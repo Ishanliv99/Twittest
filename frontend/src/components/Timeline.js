@@ -1,19 +1,40 @@
-import React, { Component } from 'react';
 import axios from 'axios';
-import { withStyles } from '@material-ui/core/styles';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
+import React, { Component } from 'react';
+import { Redirect } from 'react-router-dom';
+
 import Grid from '@material-ui/core/Grid';
 import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
+import Icon from '@material-ui/core/Icon';
+import Modal from '@material-ui/core/Modal';
 import Button from '@material-ui/core/Button';
+import EditIcon from '@material-ui/icons/Edit';
+import Toolbar from '@material-ui/core/Toolbar';
+import DeleteIcon from '@material-ui/icons/Delete';
+import TextField from '@material-ui/core/TextField';
+import { withStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
+import IconButton from '@material-ui/core/IconButton';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import CardContent from '@material-ui/core/CardContent';
+
+const getModalStyle = () => {
+  const top = 50;
+  const left = 50;
+
+  return {
+    top: `${top}%`,
+    left: `${left}%`,
+    transform: `translate(-${top}%, -${left}%)`
+  };
+};
 
 const styles = theme => ({
   layout: {
     width: 'auto',
     marginLeft: theme.spacing.unit * 3,
     marginRight: theme.spacing.unit * 3,
+    position: 'relative',
+    backgroundColor: theme.palette.background.paper,
     [theme.breakpoints.up(1100 + theme.spacing.unit * 3 * 2)]: {
       width: 1100,
       marginLeft: 'auto',
@@ -29,17 +50,6 @@ const styles = theme => ({
   toolbarSecondary: {
     justifyContent: 'space-between'
   },
-  mainFeaturedPost: {
-    backgroundColor: theme.palette.grey[800],
-    color: theme.palette.common.white,
-    marginBottom: theme.spacing.unit * 4
-  },
-  mainFeaturedPostContent: {
-    padding: `${theme.spacing.unit * 6}px`,
-    [theme.breakpoints.up('md')]: {
-      paddingRight: 0
-    }
-  },
   mainGrid: {
     marginTop: theme.spacing.unit * 3
   },
@@ -49,93 +59,192 @@ const styles = theme => ({
   cardDetails: {
     flex: 1
   },
-  cardMedia: {
-    width: 160
-  },
-  markdown: {
-    padding: `${theme.spacing.unit * 3}px 0`
-  },
-  sidebarAboutBox: {
-    padding: theme.spacing.unit * 2,
-    backgroundColor: theme.palette.grey[200]
-  },
-  sidebarSection: {
-    marginTop: theme.spacing.unit * 3
-  },
-  footer: {
+  paper: {
+    position: 'absolute',
+    width: theme.spacing.unit * 80,
     backgroundColor: theme.palette.background.paper,
-    marginTop: theme.spacing.unit * 8,
-    padding: `${theme.spacing.unit * 6}px 0`
+    boxShadow: theme.shadows[5],
+    padding: theme.spacing.unit * 4
+  },
+  textField: {
+    width: theme.spacing.unit * 70
+  },
+  fab: {
+    margin: theme.spacing.unit
   }
 });
 
 class Timeline extends Component {
-  constructor() {
-    super();
-
-    this.state = {
-      tweets: []
-    };
-  }
-
   componentDidMount() {
     axios
-      .get('127.0.0.1:8000/api/tweets')
+      .get('http://127.0.0.1:8000/api/tweets')
       .then(res => {
-        // this.setState({
-        //   tweets: [
-        //     {
-        //       title: 'asds',
-        //       date: 'asdf',
-        //       description: 'asdfadsf'
-        //     }
-        //   ]
-        // });
-        console.log('1111', res);
+        let token = localStorage.getItem('jwt');
+        this.props.setToken(token);
+        this.props.tweetsList(res);
       })
       .catch(err => err);
   }
 
   render() {
-    const { classes } = this.props;
-    const { tweets } = this.state;
+    const {
+      id,
+      tweets,
+      classes,
+      signOut,
+      thetweet,
+      username,
+      editMode,
+      modalOpen,
+      editTweet,
+      writeTweet,
+      handleModal,
+      deleteTweet,
+      onEditClick,
+      handleChange,
+      handleSignOut
+    } = this.props;
+
+    if (signOut) {
+      return <Redirect push to="/" />;
+    }
+
+    if (!username) {
+      return <Redirect push to="/signin" />;
+    }
 
     return (
       <React.Fragment>
         <CssBaseline />
         <div className={classes.layout}>
           <Toolbar className={classes.toolbarMain}>
-            <Button size="small">Sign in</Button>
+            <Button size="small" onClick={handleModal}>
+              Add Tweet
+            </Button>
+            <Modal
+              aria-labelledby="simple-modal-title"
+              aria-describedby="simple-modal-description"
+              open={modalOpen}
+              onClose={handleModal}
+            >
+              <div style={getModalStyle()} className={classes.paper}>
+                <Typography variant="h6" id="modal-title">
+                  Write your tweet
+                </Typography>
+                <TextField
+                  rows="4"
+                  multiline
+                  label="Tweet"
+                  name="thetweet"
+                  margin="normal"
+                  variant="outlined"
+                  id="outlined-textarea"
+                  onChange={handleChange}
+                  placeholder="Tweet here"
+                  defaultValue={thetweet}
+                  className={classes.textField}
+                />
+                <Button
+                  color="primary"
+                  variant="outlined"
+                  onClick={writeTweet}
+                  className={classes.button}
+                >
+                  Tweet
+                  <Icon className={classes.create}>create</Icon>
+                </Button>
+              </div>
+            </Modal>
             <Typography
-              component="h2"
-              variant="h5"
-              color="inherit"
-              align="center"
               noWrap
+              variant="h5"
+              component="h2"
+              align="center"
+              color="inherit"
               className={classes.toolbarTitle}
             >
-              Timeline
+              Twittest
             </Typography>
-            <Button variant="outlined" size="small">
-              Sign up
+            <Button variant="outlined" size="small" onClick={handleSignOut}>
+              Sign out
             </Button>
           </Toolbar>
           <main>
             <Grid container spacing={40} className={classes.cardGrid}>
               {tweets.map(post => (
-                <Grid item key={post.title}>
+                <Grid item key={post.id}>
                   <Card className={classes.card}>
                     <div className={classes.cardDetails}>
                       <CardContent>
                         <Typography component="h2" variant="h5">
-                          {post.title}
-                        </Typography>
-                        <Typography variant="subtitle1" color="textSecondary">
-                          {post.date}
+                          {post.username}
                         </Typography>
                         <Typography variant="subtitle1" paragraph>
-                          {post.description}
+                          {post.tweet}
                         </Typography>
+                        {username === post.username ? (
+                          <div>
+                            {editMode === true && post.id === id ? (
+                              <Modal
+                                aria-labelledby="simple-modal-title"
+                                aria-describedby="simple-modal-description"
+                                open={editMode}
+                              >
+                                <div
+                                  style={getModalStyle()}
+                                  className={classes.paper}
+                                >
+                                  <Typography variant="h6" id="modal-title">
+                                    Write your tweet
+                                  </Typography>
+                                  <TextField
+                                    rows="4"
+                                    multiline
+                                    label="Tweet"
+                                    name="thetweet"
+                                    margin="normal"
+                                    variant="outlined"
+                                    id="outlined-textarea"
+                                    onChange={handleChange}
+                                    defaultValue={thetweet}
+                                    placeholder="Tweet here"
+                                    className={classes.textField}
+                                  />
+                                  <Button
+                                    color="primary"
+                                    variant="outlined"
+                                    onClick={() => editTweet(post.id)}
+                                    className={classes.button}
+                                  >
+                                    Tweet
+                                    <Icon className={classes.create}>
+                                      create
+                                    </Icon>
+                                  </Button>
+                                </div>
+                              </Modal>
+                            ) : (
+                              <IconButton
+                                color="primary"
+                                aria-label="Edit"
+                                className={classes.button}
+                                onClick={() => onEditClick(post.tweet, post.id)}
+                              >
+                                <EditIcon />
+                              </IconButton>
+                            )}
+                            <IconButton
+                              color="secondary"
+                              aria-label="Delete"
+                              className={classes.button}
+                              onClick={() => deleteTweet(post.id)}
+                            >
+                              <DeleteIcon />
+                            </IconButton>
+                          </div>
+                        ) : (
+                          <div />
+                        )}
                       </CardContent>
                     </div>
                   </Card>

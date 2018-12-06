@@ -8,9 +8,10 @@ module.exports = (sequelize, DataTypes) => {
 
   Tweet.associate = models => {
     Tweet.belongsTo(models.User, {
-      foreignKey: 'userId',
+      foreignKey: 'username',
       onDelete: 'CASCADE'
     });
+
   };
 
   return Tweet;

@@ -6,10 +6,18 @@ const verifySignUp = require('../middlewares/verifySignUp');
 module.exports = app => {
   app.post('/api/auth/signup', verifySignUp, usersController.signup);
   app.post('/api/auth/signin', usersController.signin);
-  app.get('/api/users/tweets', verifyToken, usersController.userTimeline);
 
-  app.post('/api/users/:userId/tweets', tweetsController.create);
   app.get('/api/tweets', tweetsController.list);
-  app.put('/api/users/:userId/tweets/:tweetId', tweetsController.update);
-  app.delete('/api/users/:userId/tweets/:tweetId', tweetsController.destroy);
+  app.get('/api/users/:username/tweets', verifyToken, tweetsController.profile);
+  app.post('/api/users/:username/tweets', verifyToken, tweetsController.create);
+  app.put(
+    '/api/users/:username/tweets/:tweetId',
+    verifyToken,
+    tweetsController.update
+  );
+  app.delete(
+    '/api/users/:username/tweets/:tweetId',
+    verifyToken,
+    tweetsController.destroy
+  );
 };

@@ -4,7 +4,7 @@ module.exports = {
   create(req, res) {
     return Tweet.create({
       tweet: req.body.tweet,
-      userId: req.params.userId
+      username: req.params.username
     })
       .then(tweet => res.status(201).send(tweet))
       .catch(error => res.status(400).send(error));
@@ -14,11 +14,20 @@ module.exports = {
       .then(tweets => res.status(200).send(tweets))
       .catch(error => res.status(400).send(error));
   },
+  profile(req, res) {
+    return Tweet.findAll({
+      where: {
+        username: req.params.username
+      }
+    })
+      .then(tweets => res.status(200).send(tweets))
+      .catch(error => res.status(400).send(error));
+  },
   update(req, res) {
     return Tweet.find({
       where: {
         id: req.params.tweetId,
-        userId: req.params.userId
+        username: req.params.username
       }
     })
       .then(tweet => {
@@ -41,7 +50,7 @@ module.exports = {
     return Tweet.find({
       where: {
         id: req.params.tweetId,
-        userId: req.params.userId
+        username: req.params.username
       }
     })
       .then(tweet => {

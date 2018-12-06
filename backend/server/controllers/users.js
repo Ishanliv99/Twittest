@@ -44,29 +44,5 @@ module.exports = {
         res.status(200).send({ auth: true, accessToken: token });
       })
       .catch(error => res.status(400).send(error));
-  },
-  userTimeline(req, res) {
-    return User.findOne({
-      where: { id: req.userId },
-      attributes: ['username', 'email'],
-      include: [
-        {
-          model: Tweet,
-          as: 'tweets'
-        }
-      ]
-    })
-      .then(user => {
-        res.status(200).json({
-          description: 'Timeline',
-          user: user
-        });
-      })
-      .catch(err => {
-        res.status(500).json({
-          description: 'Cannot access User Timeline',
-          error: err
-        });
-      });
   }
 };
