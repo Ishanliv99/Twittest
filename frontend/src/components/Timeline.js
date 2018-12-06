@@ -243,7 +243,26 @@ class Timeline extends Component {
                             </IconButton>
                           </div>
                         ) : (
-                          <div />
+                          <div>
+                            <IconButton
+                              disabled
+                              color="primary"
+                              aria-label="Edit"
+                              className={classes.button}
+                              onClick={() => onEditClick(post.tweet, post.id)}
+                            >
+                              <EditIcon />
+                            </IconButton> 
+                            <IconButton
+                              disabled
+                              color="secondary"
+                              aria-label="Delete"
+                              className={classes.button}
+                              onClick={() => deleteTweet(post.id)}
+                            >
+                              <DeleteIcon />
+                            </IconButton>
+                          </div>
                         )}
                       </CardContent>
                     </div>
