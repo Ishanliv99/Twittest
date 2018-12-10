@@ -1,22 +1,27 @@
 {
   "name": "proj",
   "version": "1.0.0",
+  "engines": {
+    "node": "8.11.4"
+  },
   "description": "",
   "main": "index.js",
   "scripts": {
     "start:dev": "nodemon ./",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "heroku-postbuild": "cd .. && cd frontend && yarn add && yarn build"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.3",
+    "event-stream": "^3.3.4",
     "express": "^4.16.3",
     "joi": "^14.0.0",
     "jsonwebtoken": "^8.3.0",
     "morgan": "^1.9.1",
-    "pg": "^7.5.0",
+    "pg": "^7.7.1",
     "pg-hstore": "^2.3.2",
     "sequelize": "^4.39.0"
   },
